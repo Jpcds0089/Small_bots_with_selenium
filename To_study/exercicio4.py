@@ -2,6 +2,7 @@ from time import sleep
 from json import loads
 from colorama import Fore
 from colorama import Style
+from datetime import datetime
 from urllib.parse import urlparse
 from random import random, randint
 from selenium.webdriver import Firefox
@@ -9,28 +10,24 @@ from selenium.common.exceptions import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
-driver = Firefox()
-
 
 # INIT---------------------------------------------------------------------------------------------------------------#
 
 
-class Nome:
-
+class Bot:
     def __init__(self):
+        self.driver = Firefox()
         print(Fore.GREEN + "\nAbrindo navegador\n" + Style.RESET_ALL)
-        self.waint = WebDriverWait(driver, 10, poll_frequency=1, ignored_exceptions=[
+        self.waint = WebDriverWait(self.driver, 10, poll_frequency=1, ignored_exceptions=[
             NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException])
-        self.formulario = {
-            "nome": "Anonimo",
-            "email": "email@email.com",
-            "senha": "minhasenha1234",
-            "telefone": "123456789"
-        }
+        self.formulario = {"nome": "Anonimo",
+                           "email": "email@email.com",
+                           "senha": "minhasenha1234",
+                           "telefone": "123456789"}
 
     def Start(self):
-        driver.get("https://selenium.dunossauro.live/exercicio_04.html")
-        self.PreencherFormulario(driver, **self.formulario)
+        self.driver.get("https://selenium.dunossauro.live/exercicio_04.html")
+        self.PreencherFormulario(self.driver, **self.formulario)
         self.comparar_se_texto_pagina_igual_url()
         self.Quit()
 
@@ -51,7 +48,7 @@ class Nome:
         sleep(2)
         # Url page
         # logic
-        current_url = urlparse(driver.current_url)
+        current_url = urlparse(self.driver.current_url)
         query_url = current_url.query.split("&")
         resp_query_1 = query_url[0].split("=")
         resp_query_2 = query_url[1].split("=")
@@ -75,15 +72,20 @@ class Nome:
             telefone: resp_telefone
         }
         # Text page
-        main = driver.find_element(By.ID, "main").find_element(By.TAG_NAME, "textarea")
+        main = self.driver.find_element(By.ID, "main").find_element(By.TAG_NAME, "textarea")
         main_arrumado = loads(main.text.replace('\'', "\""))
         assert main_arrumado == newl
 
     def Quit(self):
-        print(Fore.GREEN + "\nAutomacão concluida. Tenha um bom dia." + Style.RESET_ALL)
-
+        clock = str(datetime.now().time())[:8]
+        if 5 < int(clock[0]) <= 11:
+            print(Fore.GREEN + "Automação finalizada. Tenha um bom dia!" + Style.RESET_ALL)
+        if 11 < int(clock[0]) <= 17:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa tarde!" + Style.RESET_ALL)
+        if 17 < int(clock[0]) <= 23 or -1 < int(clock[0]) <= 5:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa noite!" + Style.RESET_ALL)
         sleep(randint(1, 2 + randint(1, 3)))
-        driver.quit()
+        self.driver.quit()
 
     @staticmethod
     def EscreverComoPessoa(local, palavra):

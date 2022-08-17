@@ -3,26 +3,26 @@ import random
 from time import sleep
 from colorama import Fore
 from colorama import Style
+from datetime import datetime
 from selenium.webdriver import Firefox
 from selenium.common.exceptions import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-driver = Firefox()
 
 
 # INIT---------------------------------------------------------------------------------------------------------------#
 
 
-class Nome:
-
+class Bot:
     def __init__(self):
         global in_loop
+        self.driver = Firefox()
         print(Fore.GREEN + "\nAbrindo navegador\n" + Style.RESET_ALL)
-        self.waint = WebDriverWait(driver, 10, poll_frequency=1, ignored_exceptions=[
+        self.waint = WebDriverWait(self.driver, 10, poll_frequency=1, ignored_exceptions=[
             NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException])
 
     def Start(self):
-        driver.get("https://selenium.dunossauro.live/exercicio_05.html")
+        self.driver.get("https://selenium.dunossauro.live/exercicio_05.html")
         self.PreencherFormulario()
         self.Quit()
 
@@ -32,7 +32,7 @@ class Nome:
         in_loop = True
         for i in range(5):
             global selector, h2
-            coluna = driver.find_element(By.CSS_SELECTOR, 'header > p > span').text
+            coluna = self.driver.find_element(By.CSS_SELECTOR, 'header > p > span').text
             if coluna == 'l0c0':
                 h2 = 'form[class$=l0c0] h2'
                 selector = 'form[class$=l0c0] input'
@@ -48,11 +48,11 @@ class Nome:
             else:
                 in_loop = False
 
-            title = driver.find_element(By.CSS_SELECTOR, h2)
+            title = self.driver.find_element(By.CSS_SELECTOR, h2)
             print(Fore.BLUE + "Preenchendo", title.text + Style.RESET_ALL)
-            self.EscreverComoPessoa(driver.find_element(By.CSS_SELECTOR, selector))
-            self.EscreverComoPessoa(driver.find_elements(By.CSS_SELECTOR, selector)[1])
-            driver.find_elements(By.CSS_SELECTOR, selector)[2].click()
+            self.EscreverComoPessoa(self.driver.find_element(By.CSS_SELECTOR, selector))
+            self.EscreverComoPessoa(self.driver.find_elements(By.CSS_SELECTOR, selector)[1])
+            self.driver.find_elements(By.CSS_SELECTOR, selector)[2].click()
 
     @staticmethod
     def EscreverComoPessoa(local):
@@ -64,13 +64,18 @@ class Nome:
             sleep(random.random() / 2.5)
 
     def Quit(self):
-        print(Fore.GREEN + "\nAutomacão concluida. Tenha um bom dia!" + Style.RESET_ALL)
+        clock = str(datetime.now().time())[:8]
+        if 5 < int(clock[0]) <= 11:
+            print(Fore.GREEN + "Automação finalizada. Tenha um bom dia!" + Style.RESET_ALL)
+        if 11 < int(clock[0]) <= 17:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa tarde!" + Style.RESET_ALL)
+        if 17 < int(clock[0]) <= 23 or -1 < int(clock[0]) <= 5:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa noite!" + Style.RESET_ALL)
+        sleep(5)
+        self.driver.quit()
 
-        sleep(random.randint(2, 4))
-        driver.quit()
 
-
-bot = Nome()
+bot = Bot()
 bot.Start()
 
 # Finish-------------------------------------------------------------------------------------------------------------#

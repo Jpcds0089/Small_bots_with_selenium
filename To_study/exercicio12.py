@@ -1,17 +1,18 @@
 from time import sleep
 from random import random
+from datetime import datetime
+from colorama import (Fore, Style)
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import \
-     element_to_be_clickable, presence_of_element_located, number_of_windows_to_be
+from selenium.webdriver.support.expected_conditions import element_to_be_clickable, presence_of_element_located, number_of_windows_to_be
 
 
 # Functions----------------------------------------------------------------------------------------------------------#
 
 
-def SwitchTo(driver, title_page:str):
+def SwitchTo(driver, title_page: str):
     for window in driver.window_handles:
         driver.switch_to.window(window)
         if driver.title == title_page:
@@ -19,13 +20,13 @@ def SwitchTo(driver, title_page:str):
     assert driver.title == title_page
 
 
-def Click(driver, waint, loc_by_css_locator:str):
+def Click(driver, waint, loc_by_css_locator: str):
     locator = (By.CSS_SELECTOR, loc_by_css_locator)
     waint.until(presence_of_element_located(locator))
     driver.find_element(*locator).click()
 
 
-def Write(driver, waint, tupla_locator:str, text:str):
+def Write(driver, waint, tupla_locator: str, text: str):
     locator = tupla_locator
     waint.until(element_to_be_clickable(locator))
     driver.find_element(*locator).clear()
@@ -37,8 +38,7 @@ def Write(driver, waint, tupla_locator:str, text:str):
 # INIT---------------------------------------------------------------------------------------------------------------#
 
 
-class Nome:
-
+class Bot:
 
     def __init__(self):
         print("\nAbrindo navegador\n")
@@ -58,6 +58,7 @@ class Nome:
         self.Quit()
 
     def WriteNameEmailSigno(self):
+        sleep(1)
         Click(self.driver, self.waint, 'input[name="nome"]')
         self.alert.send_keys(f'{self.nome}')
         self.alert.accept()
@@ -77,7 +78,7 @@ class Nome:
         self.waint.until(number_of_windows_to_be(2))
 
         SwitchTo(self.driver, 'popup')
-        print('Pagina atual:',self.driver.title)
+        print('Pagina atual:', self.driver.title)
         assert self.driver.title == 'popup'
 
         sleep(0.5)
@@ -91,14 +92,18 @@ class Nome:
         assert signo_obtido == self.signo, f'O signo obtido foi:"{signo_obtido}" E o signo verdadeiro e:"{self.signo}"'
 
     def Quit(self):
-        print("\nAutomacão concluida. Tenha um bom dia.")
-
-        sleep(2)
+        clock = str(datetime.now().time())[:8]
+        if 5 < int(clock[0]) <= 11:
+            print(Fore.GREEN + "Automação finalizada. Tenha um bom dia!" + Style.RESET_ALL)
+        if 11 < int(clock[0]) <= 17:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa tarde!" + Style.RESET_ALL)
+        if 17 < int(clock[0]) <= 23 or -1 < int(clock[0]) <= 5:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa noite!" + Style.RESET_ALL)
+        sleep(5)
         self.driver.quit()
 
 
-bot = Nome()
+bot = Bot()
 bot.Start()
-
 
 # Finish-------------------------------------------------------------------------------------------------------------#

@@ -1,12 +1,10 @@
 from time import sleep
-from colorama import Fore
-from colorama import Style
+from datetime import datetime
+from colorama import (Fore, Style)
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-
-driver = Firefox()
 
 
 # INIT---------------------------------------------------------------------------------------------------------------#
@@ -15,8 +13,9 @@ driver = Firefox()
 class Nome:
 
     def __init__(self):
+        self.driver = Firefox()
         print(Fore.GREEN + "\nAbrindo navegador\n" + Style.RESET_ALL)
-        driver.get('https://selenium.dunossauro.live/caixinha')
+        self.driver.get('https://selenium.dunossauro.live/caixinha')
 
     def Start(self):
         self.LocBox()
@@ -24,16 +23,16 @@ class Nome:
         self.SetClolorsBox(loc_box, loc_span, Keys.SHIFT)
         self.SetClolorsBox(loc_box, loc_span, Keys.CONTROL)
         self.SetClolorsBox(loc_box, loc_span, key=Keys.SHIFT, key1=Keys.CONTROL)
-        #self.Quit()
+        self.Quit()
 
     def LocBox(self):
         sleep(1)
         global loc_box, loc_span
-        loc_box = driver.find_element(By.ID, 'caixa')
-        loc_span = driver.find_element(By.TAG_NAME, 'span')
+        loc_box = self.driver.find_element(By.ID, 'caixa')
+        loc_span = self.driver.find_element(By.TAG_NAME, 'span')
 
     def SetClolorsBox(self, loc, loc1=None, key=None, key1=None):
-        ac = ActionChains(driver)
+        ac = ActionChains(self.driver)
         ac.pause(1)
 
         if key:
@@ -64,13 +63,13 @@ class Nome:
         sleep(0.5)
         self.GetColors()
         sleep(0.5)
-        driver.refresh()
+        self.driver.refresh()
         sleep(0.5)
         self.LocBox()
 
     def GetColors(self):
         # Init
-        resultados_dos_eventos = driver.find_element(By.TAG_NAME, 'textarea').text
+        resultados_dos_eventos = self.driver.find_element(By.TAG_NAME, 'textarea').text
         list_resultado = resultados_dos_eventos.split('\n')
         list_colors_disorganized = []
         list_colors_organized = []
@@ -94,9 +93,15 @@ class Nome:
             print(cor)
 
     def Quit(self):
-        print(Fore.GREEN + "\nAutomacão concluida. Tenha um bom dia." + Style.RESET_ALL)
+        clock = str(datetime.now().time())[:8]
+        if 5 < int(clock[0]) <= 11:
+            print(Fore.GREEN + "Automação finalizada. Tenha um bom dia!" + Style.RESET_ALL)
+        if 11 < int(clock[0]) <= 17:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa tarde!" + Style.RESET_ALL)
+        if 17 < int(clock[0]) <= 23 or -1 < int(clock[0]) <= 5:
+            print(Fore.GREEN + "Automação finalizada. Tenha uma boa noite!" + Style.RESET_ALL)
         sleep(5)
-        driver.quit()
+        self.driver.quit()
 
 
 bot = Nome()
